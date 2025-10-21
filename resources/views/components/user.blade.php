@@ -1,7 +1,7 @@
 <!-- User Dashboard Content -->
 <div class="user-dashboard">
     <h2>User Dashboard</h2>
-    <p>Browse jobs, update your profile, and track applications.</p>
+    <p>Browse jobs, update your profile, and track applications. yes sir</p>
     <div class="dashboard-links">
         <a href="#">Browse Jobs</a>
         <a href="#">My Profile</a>
