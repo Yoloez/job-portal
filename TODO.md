@@ -1,6 +1,5 @@
-# TODO: Implement Role-Based Dashboards
+# TODO: Redirect Admin Login to admin/index
 
--   [ ] Add dashboard route to routes/web.php with auth middleware
--   [ ] Update resources/views/dashboard.blade.php with conditional content for admin and user roles
--   [ ] Update resources/views/components/header.blade.php to show dashboard and logout links for authenticated users
--   [ ] Test the role-based redirection and dashboard display
+-   [x] Update routes/web.php: Add ->name('admin.index') to the admin route and fix middleware array to ['auth', 'isAdmin']
+-   [x] Modify app/Http/Controllers/AuthController.php: Change the redirect to use the route name 'admin.index' after successful login
+-   [x] Update app/Http/Middleware/isAdmin.php: Change redirect for non-admins to '/login' instead of '/admin'
