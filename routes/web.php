@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\JobController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
 Route::get('/about', function () {
     return view('about');
 });
@@ -16,15 +18,23 @@ Route::get('/register', [AuthController::class, 'showRegisterForm']) ->name('reg
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/logout', [AuthController::class, 'logout']) ->name('logout');
 
+Route::get('/jobs', [JobController::class, 'index']);
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 });
 
-Route::get('/admin/index', function () {
+Route::get('/admin', function () {
     return view('admin.index');
-})->middleware(['auth', 'isAdmin'])->name('admin.index');
+})->middleware(['auth', 'isAdmin'])->name('admin');
 
+Route::get('admin/jobs', function () {
+    return view('admin.jobs');
+})->middleware(['auth', 'isAdmin'])->name('admin.jobs');
 
-
+Route::get('/user', function () {
+    return view('user.profile');
+})->middleware(['auth', 'isUser'])->name('user');
