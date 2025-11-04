@@ -27,14 +27,32 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 });
 
-Route::get('/admin', function () {
-    return view('admin.index');
-})->middleware(['auth', 'isAdmin'])->name('admin');
+// Route::get('/admin', function () {
+//     return view('admin.index');
+// })->middleware(['auth', 'isAdmin'])->name('admin');
 
-Route::get('admin/jobs', function () {
-    return view('admin.jobs');
-})->middleware(['auth', 'isAdmin'])->name('admin.jobs');
+// Route::get('admin/jobs', function () {
+//     return view('admin.jobs');
+// })->middleware(['auth', 'isAdmin'])->name('admin.jobs');
+
+
+Route::middleware(['auth', 'isAdmin'])->prefix('admin')
+->group(function () {
+    Route::get('/', function () {
+        return view('admin.index');
+    })->name('admin.index');
+
+    Route::get('/jobs', function () {
+        return view('admin.jobs');
+    })->name('admin.jobs');
+
+    Route::resource('jobs', JobController::class);
+});
+
+
+
 
 Route::get('/user', function () {
     return view('user.profile');
 })->middleware(['auth', 'isUser'])->name('user');
+
