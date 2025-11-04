@@ -71,7 +71,7 @@ class JobController extends Controller
         return view('jobs.edit', compact('job'));
     }
 
-    /**
+    /** 
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
@@ -83,7 +83,6 @@ class JobController extends Controller
             'company' => 'required',
             'logo' => 'image|mimes:jpg,png,jpeg|max:2048'
         ]);
-
         $job = Job::findOrFail($id);
         $logoPath = $job->logo; 
 

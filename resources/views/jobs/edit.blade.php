@@ -218,7 +218,6 @@ textarea.form-control {
         </form>
     </div>
 </div>
-
 <script>
 function previewImage(event) {
     const reader = new FileReader();
