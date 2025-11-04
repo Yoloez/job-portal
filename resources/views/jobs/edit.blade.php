@@ -49,10 +49,8 @@
     width: 100%;
     max-width: 600px;
     display: flex;
-    /* flex-direction: column; */
     align-items: center;
     justify-content: center;
-
 }
 
 label {
@@ -165,47 +163,56 @@ textarea.form-control {
         <div class="header-icon">
             <svg style="width: 40px; height: 40px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                 </path>
             </svg>
         </div>
-        <h2>Tambah Lowongan Baru</h2>
-        <p>Lengkapi form di bawah untuk menambahkan lowongan pekerjaan</p>
+        <h2>Edit Lowongan</h2>
+        <p>Perbarui informasi lowongan pekerjaan</p>
     </div>
 
     <!-- Form Card -->
     <div class="form-card">
-        <form action="{{ route('jobs.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('jobs.update', $job->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
+            @method('PUT')
             <div style="margin-bottom: 25px;">
                 <label>Judul Lowongan</label>
-                <input type="text" name="title" class="form-control" placeholder="Contoh: Full Stack Developer" required>
+                <input type="text" name="title" class="form-control" value="{{ $job->title }}" placeholder="Contoh: Full Stack Developer" required>
             </div>
             <div style="margin-bottom: 25px;">
                 <label>Deskripsi Pekerjaan</label>
-                <textarea name="description" class="form-control" rows="5"
-                    placeholder="Jelaskan detail pekerjaan, requirements, dan benefit..." required></textarea>
+                <textarea name="description" class="form-control" rows="5" placeholder="Jelaskan detail pekerjaan, requirements, dan benefit..." required>{{ $job->description }}</textarea>
             </div>
             <div style="margin-bottom: 25px;">
                 <label>Nama Perusahaan</label>
-                <input type="text" name="company" class="form-control" placeholder="Contoh: PT Tech Indonesia" required>
+                <input type="text" name="company" class="form-control" value="{{ $job->company }}" placeholder="Contoh: PT Tech Indonesia" required>
             </div>
             <div class="row-2" style="margin-bottom: 25px;">
                 <div>
                     <label>Lokasi</label>
-                    <input type="text" name="location" class="form-control" placeholder="Jakarta" required>
+                    <input type="text" name="location" class="form-control" value="{{ $job->location }}" placeholder="Jakarta" required>
                 </div>
-                <div><label>Gaji (Rp)</label><input type="number" name="salary" class="form-control" placeholder="8000000" required></div>
+                <div>
+                    <label>Gaji (Rp)</label>
+                    <input type="number" name="salary" class="form-control" value="{{ $job->salary }}" placeholder="8000000" required>
+                </div>
             </div>
             <div style="margin-bottom: 30px;">
                 <label>Logo Perusahaan</label>
                 <input type="file" name="logo" id="logo" class="form-control" accept="image/*" onchange="previewImage(event)">
+                @if($job->logo)
+                <div id="imagePreview" style="display: block;">
+                    <img id="preview" src="{{ asset('storage/' . $job->logo) }}" alt="Current Logo">
+                </div>
+                @else
                 <div id="imagePreview">
                     <img id="preview" src="" alt="Preview">
                 </div>
+                @endif
             </div>
             <div style="display: flex; gap: 12px; margin-top: 30px;">
-                <button type="submit" class="button-save">Simpan Lowongan</button>
+                <button type="submit" class="button-save">Update Lowongan</button>
                 <a href="{{ route('jobs.index') }}" class="button-cancel">Batal</a>
             </div>
         </form>
