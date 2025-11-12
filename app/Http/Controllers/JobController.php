@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\JobVacancy as Job;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\JobsImport;
+use Illuminate\Support\Facades\Auth;
 
 class JobController extends Controller
 {
@@ -14,7 +17,11 @@ class JobController extends Controller
     public function index()
     {
         $jobs = Job::all();
+        if (Auth::check() && Auth::user()->role === 'admin') {
         return view('jobs.index', compact('jobs'));
+        }  else {
+        return view('user.index', compact('jobs'));
+        }
     }
 
     /**
@@ -120,4 +127,8 @@ class JobController extends Controller
     // Mengembalikan pengguna ke halaman daftar lowongan dengan pesan sukses
     return redirect()->route('jobs.index')->with('success', 'Lowongan berhasil dihapus.');
     }
+    public function import(Request $request){
+        $request->validate(['file' => 'required|mimes:xlsx,csv']);
+        Excel::import(new JobsImport, $request->file('file'));
+            return back()->with('success', 'Data lowongan berhasil diimport');}
 }

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.user')
 @section('content')
 
 <div class="jobs-container">
@@ -10,12 +10,6 @@
                     <h1 class="page-title">Daftar Lowongan Pekerjaan</h1>
                     <p class="page-subtitle">Kelola semua lowongan pekerjaan Anda di sini</p>
                 </div>
-                <a href="{{ route('jobs.create') }}" class="btn btn-add text-white d-flex align-items-center gap-2">
-                    <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                    Tambah Lowongan
-                </a>
             </div>
         </div>
 
@@ -59,17 +53,7 @@
                     </p>
                 </div>
                 <div class="d-grid gap-2">
-                    <a href="{{ route('jobs.edit', $job->id) }}" class="btn btn-warning">
-                        Edit
-                    </a>
-                    <form action="{{ route('jobs.destroy', $job->id) }}" method="POST" class="m-0"
-                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus lowongan ini?')">
-                        @csrf 
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger w-100">
-                            Hapus
-                        </button>
-                    </form>
+                
                     <form action="{{ route('apply.store', $job->id) }}"
                             method="POST" enctype="multipart/form-data">
                             @csrf
@@ -95,19 +79,6 @@
         </div>
         @else
         <!-- Empty State -->
-<div class="text-center py-5">
-    <svg style="width: 60px; height: 60px; color: #94a3b8;" class="mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-    </svg>
-    <h3>Belum Ada Lowongan</h3>
-    <p class="text-muted">Mulai tambahkan lowongan pekerjaan pertama Anda</p>
-    <a href="{{ route('jobs.create') }}" class="btn btn-primary">
-        <svg style="width: 20px; height: 20px;" class="me-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-        </svg>
-        Tambah Lowongan Sekarang
-    </a>
-</div>
 @endif
     </div>
 </div>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\ApplicationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -42,17 +43,23 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')
         return view('admin.index');
     })->name('admin.index');
 
-    Route::get('/jobs', function () {
-        return view('admin.jobs');
-    })->name('admin.jobs');
-
+    Route::get('applications/{jobId}', [ApplicationController::class, 'index'])->name('applications.index');
+    Route::put('applications/{id}', [ApplicationController::class, 'update'])->name('applications.update');
     Route::resource('jobs', JobController::class);
 });
 
+Route::post('/jobs/{job}/apply', [ApplicationController::class, 'store'])->name('apply.store')->middleware('auth');
+Route::get('/jobs/{job}/applicants',[ApplicationController::class,'index'])->name('application.index')->middleware('isAdmin');
 
 
 
-Route::get('/user', function () {
-    return view('user.profile');
-})->middleware(['auth', 'isUser'])->name('user');
+Route::get('/user', [JobController::class, 'index'])->middleware(['auth', 'isUser'])->name('user');
 
+
+Route::resource('jobs', JobController::class)->middleware(['auth','isAdmin'])->except(['index', 'show']);
+Route::resource('jobs', JobController::class)->middleware(['auth'])->only(['index','show']);
+
+Route::resource('applications', ApplicationController::class)->middleware(['auth'])->only(['index', 'show']);
+
+Route::get('/applications/export', [ApplicationController::class, 'export'])->name('applications.export')->middleware('isAdmin');
+Route::post('/jobs/import', [JobController::class, 'import'])->name('jobs.import')->middleware('isAdmin');
