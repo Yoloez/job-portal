@@ -42,24 +42,25 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')
     Route::get('/', function () {
         return view('admin.index');
     })->name('admin.index');
-
     Route::get('applications/{jobId}', [ApplicationController::class, 'index'])->name('applications.index');
     Route::put('applications/{id}', [ApplicationController::class, 'update'])->name('applications.update');
-    Route::resource('jobs', JobController::class);
 });
 
+Route::resource('jobs', JobController::class);
 Route::post('/jobs/{job}/apply', [ApplicationController::class, 'store'])->name('apply.store')->middleware('auth');
 Route::get('/jobs/{job}/applicants',[ApplicationController::class,'index'])->name('application.index')->middleware('isAdmin');
+Route::resource('jobs', JobController::class)->middleware(['auth','isAdmin'])->except(['index', 'show']);
+Route::resource('jobs', JobController::class)->middleware(['auth'])->only(['index','show']);
+Route::resource('applications', ApplicationController::class)->middleware(['auth'])->only(['index', 'show']);
 
+Route::get('/applications/export/{jobId}', [ApplicationController::class, 'export'])->name('applications.export')->middleware('isAdmin');
+
+
+Route::get('/applications/{id}/download-cv', [ApplicationController::class, 'downloadCv'])->name('applications.download-cv')->middleware('isAdmin');
+
+
+Route::post('/jobs/import', [JobController::class, 'import'])->name('jobs.import')->middleware('isAdmin');
+Route::get('/jobs/import/template', [JobController::class, 'downloadTemplate'])->name('jobs.import.template')->middleware('isAdmin');
 
 
 Route::get('/user', [JobController::class, 'index'])->middleware(['auth', 'isUser'])->name('user');
-
-
-Route::resource('jobs', JobController::class)->middleware(['auth','isAdmin'])->except(['index', 'show']);
-Route::resource('jobs', JobController::class)->middleware(['auth'])->only(['index','show']);
-
-Route::resource('applications', ApplicationController::class)->middleware(['auth'])->only(['index', 'show']);
-
-Route::get('/applications/export', [ApplicationController::class, 'export'])->name('applications.export')->middleware('isAdmin');
-Route::post('/jobs/import', [JobController::class, 'import'])->name('jobs.import')->middleware('isAdmin');

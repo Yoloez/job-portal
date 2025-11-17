@@ -62,20 +62,12 @@
                             btn-primary">Lamar</button>
                             </form>
 
-                    
-
                         </div>
-                        <a href={{ route("application.index", $job->id) }}>Lihat pelamar</a>
+                        {{-- <a href={{ route("application.index", $job->id) }}>Lihat pelamar</a> --}}
                     </div>
                 </div>
             </div>
             @endforeach
-            <form action="/jobs/import" method="POST" enctype="multipart/form-data">
-            @csrf
-            <input type="file" name="file" required>
-            <button type="submit" class="btn btn-info">Import
-            Lowongan</button>
-            </form>
         </div>
         @else
         <!-- Empty State -->

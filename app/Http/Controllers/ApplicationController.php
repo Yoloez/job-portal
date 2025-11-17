@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Application;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ApplicationsExport;
 use App\Models\JobVacancy as Job;
+use App\Mail\JobAppliedMail;
+use Illuminate\Support\Facades\Mail;
+use App\Models\User;
+use App\Notifications\NewApplicationNotification;
+use App\Jobs\SendApplicationMailJob;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 
 class ApplicationController extends Controller
@@ -35,19 +42,24 @@ class ApplicationController extends Controller
     public function store(Request $request, $jobId)
     {
         $request->validate([
-            // 'user_id' => 'required|exists:users,id',
-            // 'job_id' => 'required|exists:job_vacancies,id',
             'cv' => 'required|mimes:pdf|max:2048',
         ]);
 
         $cvPath = $request->file('cv')->store('cvs', 'public');
 
-        Application::create([
+        $job = Job::findOrFail($jobId);
+        $application = Application::create([
             'user_id' => Auth::id(),
             'job_id' => $jobId,
             'cv' => $cvPath,
         ]);
-        return back()->with('success', 'Application submitted successfully.');
+        
+        dispatch(new SendApplicationMailJob($job, Auth::user())); 
+
+        $admin = User::where('role', 'admin')->first();
+        $admin->notify(new NewApplicationNotification($application));
+
+        return back()->with('success', 'Lamaran berhasil dikirim, cek email Anda untuk konfirmasi.');
     }
 
     /**
@@ -71,7 +83,21 @@ class ApplicationController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // Validasi input status
+        $request->validate([
+            'status' => 'required|in:Accepted,Rejected',
+        ]);
+
+        // Cari aplikasi berdasarkan ID
+        $application = Application::findOrFail($id);
+
+        // Update status aplikasi
+        $application->update([
+            'status' => $request->input('status'),
+        ]);
+        $statusMessage = $request->input('status') === 'Accepted' ? 'diterima' : 'ditolak';
+
+        return back()->with('success', 'Aplikasi berhasil ' . $statusMessage . '.');
     }
 
     /**
@@ -82,7 +108,39 @@ class ApplicationController extends Controller
         //
     }
 
-    public function export(){
-        return Excel::download (new ApplicationsExport, 'applications.xlsx');
+    /**
+     * Download CV from application
+     */
+
+    public function downloadCv(string $id)
+    {
+        $application = Application::findOrFail($id);
+
+        if (!Storage::disk('public')->exists($application->cv)) {
+            return back()->with('error', 'File CV tidak ditemukan.');
+        }
+
+        $filePath = storage_path('app/public/' . $application->cv);      
+        $fileName = $application->user->name . '_CV_' . $application->id . '.pdf';
+
+        return response()->download($filePath, $fileName);
+    }
+
+    /**
+     * Export applications to Excel
+     */
+    public function export($jobId = null)
+    {
+        // Cari nama pekerjaan jika jobId tersedia
+        $jobName = '';
+        if ($jobId) {
+            $job = Job::findOrFail($jobId);
+            $jobName = '_' . str_replace(' ', '_', $job->title);
+        }
+
+        $fileName = 'applications' . $jobName . '_' . date('d-m-Y') . '.xlsx';
+        
+        return Excel::download(new ApplicationsExport($jobId), $fileName);
     }
 }
+

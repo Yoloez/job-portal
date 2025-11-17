@@ -10,12 +10,21 @@
                     <h1 class="page-title">Daftar Lowongan Pekerjaan</h1>
                     <p class="page-subtitle">Kelola semua lowongan pekerjaan Anda di sini</p>
                 </div>
-                <a href="{{ route('jobs.create') }}" class="btn btn-add text-white d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ route('jobs.create') }}" class="btn btn-add text-white d-flex align-items-center gap-2">
                     <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
                     Tambah Lowongan
-                </a>
+                    </a>
+
+                    <a href="{{ route('jobs.import.template') }}" class="btn btn-secondary text-white d-flex align-items-center gap-2">
+                        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download Template Import
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -70,28 +79,25 @@
                             Hapus
                         </button>
                     </form>
-                    <form action="{{ route('apply.store', $job->id) }}"
-                            method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('apply.store', $job->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <input type="file" name="cv" required>
-                            <button type="submit" class="btn
-                            btn-primary">Lamar</button>
-                            </form>
-
-                    
-
+                        <input type="file" name="cv" required>
+                        <button type="submit" class="btn btn-primary">Lamar</button>
+                    </form>
+                
                         </div>
                         <a href={{ route("application.index", $job->id) }}>Lihat pelamar</a>
                     </div>
                 </div>
             </div>
             @endforeach
+
             <form action="/jobs/import" method="POST" enctype="multipart/form-data">
-            @csrf
-            <input type="file" name="file" required>
-            <button type="submit" class="btn btn-info">Import
-            Lowongan</button>
+                @csrf
+                <input type="file" name="file" required>
+                <button type="submit" class="btn btn-info">Import Lowongan</button>
             </form>
+
         </div>
         @else
         <!-- Empty State -->

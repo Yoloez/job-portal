@@ -37,6 +37,15 @@
                                 <p class="text-white font-semibold">{{ $job->title }}</p>
                             @endif
                         </div>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('applications.export', $job->id) }}" 
+                               class="inline-flex items-center gap-2 px-4 py-2 bg-white text-indigo-600 text-sm font-bold rounded-lg hover:bg-gray-100 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                                Export Excel
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -90,7 +99,21 @@
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
                             @forelse($applications as $app)
-                                <tr class="hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200">
+                                <tr class="transition-all duration-200
+                                    @if($app->status === 'Accepted')
+                                        hover:bg-green-100 border-l-4 border-green-500 bg-amber-300
+                                    @elseif($app->status === 'Rejected')
+                                        hover:bg-red-100 border-l-4 border-red-500
+                                    @else
+                                        hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50
+                                    @endif
+                                "
+                                    @if($app->status === 'Accepted')
+                                        style="background-color: ;"
+                                    @elseif($app->status === 'Rejected')
+                                        style="background-color: #fee2e2;"
+                                    @endif
+                                >
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-3">
                                             <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-md">
@@ -129,7 +152,7 @@
                                                 </svg>
                                                 {{ $app->status }}
                                             </span>
-                                        @elseif($app->status === 'Accepted')
+                                        @elseif($app->status === 'accepted')
                                             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300 shadow-sm">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -146,8 +169,16 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="flex items-center gap-2">
-                                            <form action="{{ route('applications.update', $app->id) }}" method="POST">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <a href="{{ route('applications.download-cv', $app->id) }}" 
+                                               class="inline-flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                </svg>
+                                                Download CV
+                                            </a>
+
+                                            <form action="{{ route('applications.update', $app->id) }}" method="POST" style="display: inline;">
                                                 @csrf
                                                 @method('PUT')
                                                 <input type="hidden" name="status" value="Accepted">
@@ -160,7 +191,7 @@
                                                 </button>
                                             </form>
 
-                                            <form action="{{ route('applications.update', $app->id) }}" method="POST">
+                                            <form action="{{ route('applications.update', $app->id) }}" method="POST" style="display: inline;">
                                                 @csrf
                                                 @method('PUT')
                                                 <input type="hidden" name="status" value="Rejected">

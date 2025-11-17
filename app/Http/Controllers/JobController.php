@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\JobVacancy as Job;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\JobsTemplateExport;
 use App\Imports\JobsImport;
 use Illuminate\Support\Facades\Auth;
 
@@ -123,12 +124,21 @@ class JobController extends Controller
 
     // Menghapus data job dari database
     $job->delete();
-
     // Mengembalikan pengguna ke halaman daftar lowongan dengan pesan sukses
     return redirect()->route('jobs.index')->with('success', 'Lowongan berhasil dihapus.');
     }
+
     public function import(Request $request){
         $request->validate(['file' => 'required|mimes:xlsx,csv']);
         Excel::import(new JobsImport, $request->file('file'));
             return back()->with('success', 'Data lowongan berhasil diimport');}
+
+    /**
+     * Download an Excel template for importing jobs.
+     * Only admins should access this (route will be protected by middleware).
+     */
+    public function downloadTemplate()
+    {
+        return Excel::download(new JobsTemplateExport, 'jobs_import_template.xlsx');
+    }
 }

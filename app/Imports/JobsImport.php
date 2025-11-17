@@ -5,8 +5,9 @@ namespace App\Imports;
 use App\Models\Job;
 use App\Models\JobVacancy;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class JobsImport implements ToModel
+class JobsImport implements ToModel, WithHeadingRow
 {
     /**
     * @param array $row
@@ -16,10 +17,12 @@ class JobsImport implements ToModel
     public function model(array $row)
     {
         return new JobVacancy([
-            'title' => $row[0],
-            'description' => $row[1],
-            'location' => $row [2],
-            'company' => $row [3],
-            'salary' => $row[4]]);
+            'title' => $row['title'] ?? null,
+            'description' => $row['description'] ?? null,
+            'location' => $row['location'] ?? null,
+            'company' => $row['company'] ?? null,
+            'salary' => $row['salary'] ?? null,
+            'employment_type' => $row['employment_type'] ?? null,
+        ]);
     }
 }
