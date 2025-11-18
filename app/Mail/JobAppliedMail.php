@@ -16,18 +16,12 @@ class JobAppliedMail extends Mailable
     public $job;
     public $user;
 
-    /**
-     * Create a new message instance.
-     */
     public function __construct($job, $user)
     {
         $this->job = $job;
         $this->user = $user;
     }
     
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -35,9 +29,6 @@ class JobAppliedMail extends Mailable
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
         return new Content(

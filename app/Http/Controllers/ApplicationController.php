@@ -39,28 +39,28 @@ class ApplicationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, $jobId)
-    {
-        $request->validate([
-            'cv' => 'required|mimes:pdf|max:2048',
-        ]);
+        public function store(Request $request, $jobId)
+        {
+            $request->validate([
+                'cv' => 'required|mimes:pdf|max:2048',
+            ]);
 
-        $cvPath = $request->file('cv')->store('cvs', 'public');
+            $cvPath = $request->file('cv')->store('cvs', 'public');
 
-        $job = Job::findOrFail($jobId);
-        $application = Application::create([
-            'user_id' => Auth::id(),
-            'job_id' => $jobId,
-            'cv' => $cvPath,
-        ]);
-        
-        dispatch(new SendApplicationMailJob($job, Auth::user())); 
+            $job = Job::findOrFail($jobId);
+            $application = Application::create([
+                'user_id' => Auth::id(),
+                'job_id' => $jobId,
+                'cv' => $cvPath,
+            ]); 
+            
+            dispatch(new SendApplicationMailJob($job, Auth::user())); 
+            return back()->with('success', 'Lamaran berhasil dikirim, cek email Anda untuk konfirmasi.');
+            
+            $admin = User::where('role', 'admin')->first();
+            $admin->notify(new NewApplicationNotification($application));
 
-        $admin = User::where('role', 'admin')->first();
-        $admin->notify(new NewApplicationNotification($application));
-
-        return back()->with('success', 'Lamaran berhasil dikirim, cek email Anda untuk konfirmasi.');
-    }
+        }
 
     /**
      * Display the specified resource.

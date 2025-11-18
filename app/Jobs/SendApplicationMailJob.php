@@ -9,28 +9,22 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\JobAppliedMail;
+use App\Models\JobVacancy as Job;
 
 class SendApplicationMailJob implements ShouldQueue
 {
     use Dispatchable, Queueable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $job;
+    public $jobModel;
     public $user;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct($job, $user)
+    public function __construct($jobModel, $user)
     {
-        $this->job = $job;
+        $this->jobModel = $jobModel;
         $this->user = $user;
     }
-
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
-        Mail::to($this->user->email) ->send(new JobAppliedMail($this->job, $this->user));
+        Mail::to($this->user->email) ->send(new JobAppliedMail($this->jobModel, $this->user));
     }
 }
