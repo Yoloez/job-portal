@@ -35,11 +35,15 @@ class NewApplicationNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $applicationUrl = route('applications.index', ['jobId' => $this->application->job_id]);
+        $downloadUrl = route('applications.download-cv', $this->application->id);
+
         return (new MailMessage)
             ->subject('New Application Received')
             ->line('Ada lamaran baru untuk pekerjaan: ' . $this->application->job->title)
             ->line('Pelamar: ' . $this->application->user->name)
-            ->action('Lihat Lamaran', url('/applications', $this->application->id));
+            ->action('Lihat Semua Lamaran', $applicationUrl)
+            ->action('Download CV', $downloadUrl);
     }
 
     /**
