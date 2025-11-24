@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use App\Notifications\NewApplicationNotification;
 use App\Jobs\SendApplicationMailJob;
+use App\Mail\ApplicationStatusMail;
+
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 
@@ -55,10 +57,10 @@ class ApplicationController extends Controller
             ]); 
             
             dispatch(new SendApplicationMailJob($job, Auth::user())); 
-            return back()->with('success', 'Lamaran berhasil dikirim, cek email Anda untuk konfirmasi.');
             
             $admin = User::where('role', 'admin')->first();
             $admin->notify(new NewApplicationNotification($application));
+            return back()->with('success', 'Lamaran berhasil dikirim, cek email Anda untuk konfirmasi.');
 
         }
 
@@ -83,21 +85,25 @@ class ApplicationController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Validasi input status
-        $request->validate([
-            'status' => 'required|in:Accepted,Rejected',
-        ]);
+         $request->validate([
+        'status' => 'required|in:Accepted,Rejected',
+    ]);
 
-        // Cari aplikasi berdasarkan ID
-        $application = Application::findOrFail($id);
+    // Cari aplikasi berdasarkan ID
+    $application = Application::findOrFail($id);
 
-        // Update status aplikasi
-        $application->update([
-            'status' => $request->input('status'),
-        ]);
-        $statusMessage = $request->input('status') === 'Accepted' ? 'diterima' : 'ditolak';
+    // Update status aplikasi
+    $application->update([
+        'status' => $request->input('status'),
+    ]);
 
-        return back()->with('success', 'Aplikasi berhasil ' . $statusMessage . '.');
+    // == Kirim Email ke Pelamar ==
+    Mail::to($application->user->email)
+        ->send(new ApplicationStatusMail($application));
+
+    $statusMessage = $request->input('status') === 'Accepted' ? 'diterima' : 'ditolak';
+
+    return back()->with('success', 'Aplikasi berhasil ' . $statusMessage . ' dan email sudah dikirim.');
     }
 
     /**
@@ -141,6 +147,15 @@ class ApplicationController extends Controller
         $fileName = 'applications' . $jobName . '_' . date('d-m-Y') . '.xlsx';
         
         return Excel::download(new ApplicationsExport($jobId), $fileName);
+    }
+
+    public function markAsRead($id)
+    {
+        $notification = auth()->user()->notifications()->where('id', $id)->first();
+        if ($notification) {
+            $notification->markAsRead();
+        }
+        return back()->with('success', 'Notification marked as read.');
     }
 }
 

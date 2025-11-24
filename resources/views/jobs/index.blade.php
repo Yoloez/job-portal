@@ -78,13 +78,7 @@
                         <button type="submit" class="btn btn-danger w-100">
                             Hapus
                         </button>
-                    </form>
-                    <form action="{{ route('apply.store', $job->id) }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                        <input type="file" name="cv" required>
-                        <button type="submit" class="btn btn-primary">Lamar</button>
-                    </form>
-                
+                    </form>                
                         </div>
                         <a href={{ route("application.index", $job->id) }}>Lihat pelamar</a>
                     </div>

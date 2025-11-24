@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\ApplicationController;
+use App\Models\User;
 
 Route::get('/', function () {
     return view('welcome');
@@ -40,10 +41,12 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'isAdmin'])->prefix('admin')
 ->group(function () {
     Route::get('/', function () {
-        return view('admin.index');
+        $notifications = auth()->user()->unreadNotifications;
+        return view('admin.index', compact('notifications'));
     })->name('admin.index');
     Route::get('applications/{jobId}', [ApplicationController::class, 'index'])->name('applications.index');
     Route::put('applications/{id}', [ApplicationController::class, 'update'])->name('applications.update');
+    Route::get('notification/{id}/read', [ApplicationController::class, 'markAsRead'])->name('admin.notification.read');
 });
 
 Route::resource('jobs', JobController::class);
