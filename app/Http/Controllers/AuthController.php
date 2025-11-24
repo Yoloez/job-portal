@@ -11,20 +11,61 @@ class AuthController extends Controller{
         return view('auth.login');
     }
 
-    public function login (Request $request) {
-        $credentials = $request->only('email',
-        'password');
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.index');
-        } elseif ($user->role === 'user') {
-            return redirect()->route('user');}
+    public function login(Request $request){
+    // 1. Validasi input
+    $validated = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|min:6',
+    ]);
+
+    // 2. Coba login
+    if (!Auth::attempt($validated)) {
+
+        // Jika request API / AJAX
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email atau password salah'
+            ], 401);
         }
-        else {
-            return back()->withErrors(['email' => 'Email atau password salah.']);
-            }
+
+        // Jika request Web
+        return back()
+            ->withErrors(['email' => 'Email atau password salah.'])
+            ->withInput();
     }
+
+    // 3. Login berhasil
+    $user = Auth::user();
+
+    // Jika request API / AJAX
+    if ($request->expectsJson()) {
+        return response()->json([
+            'success' => true,
+            'message' => 'Login berhasil',
+            'user' => $user,
+        ], 200);
+    }
+
+    // 4. Redirect berdasarkan role
+    switch ($user->role) {
+        case 'admin':
+            return redirect()
+                ->route('admin.index')
+                ->with('success', 'Selamat datang, admin!');
+
+        case 'user':
+            return redirect()
+                ->route('user')
+                ->with('success', 'Login berhasil.');
+        
+        default:
+            Auth::logout();
+            return redirect('/')
+                ->withErrors(['role' => 'Role tidak dikenali.']);
+    }
+}
+
 
     public function showRegisterForm(){
         return view('auth.register');
