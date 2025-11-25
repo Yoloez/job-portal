@@ -8,6 +8,12 @@ use App\Http\Controllers\Api\ApplicationApiController;
 
 Route::get('/status', fn() => ['status' => 'API is running']);
 
+// Public endpoints (no authentication required)
+Route::prefix('public')->group(function () {
+    Route::get('/jobs', [JobApiController::class, 'index']);
+    Route::get('/jobs/{job}', [JobApiController::class, 'show']);
+});
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
@@ -23,9 +29,9 @@ Route::put('/jobs/{job}', [JobApiController::class, 'update']);
 Route::delete('/jobs/{job}', [JobApiController::class, 'destroy']);
 
 // Applications
-
 Route::post('/jobs/{job}/apply', [ApplicationApiController::class, 'store']);
 Route::get('/applications', [ApplicationApiController::class, 'index']);
+Route::put('/applications/{application}/status', [ApplicationApiController::class, 'updateStatus']);
 });
 
 
