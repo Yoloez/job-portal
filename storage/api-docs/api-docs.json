@@ -2,41 +2,512 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Job Portal API",
-        "description": "Swagger documentation for the Job Portal service",
+        "description": "RESTful API for Job Portal - manage jobs, applications, and users",
         "version": "1.0.0"
     },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Local development server"
+        }
+    ],
     "paths": {
-        "/api/jobs": {
+        "/api/applications": {
             "get": {
                 "tags": [
-                    "Jobs"
+                    "Applications (Admin)"
                 ],
-                "summary": "Get all job listings",
-                "operationId": "7ddb43f87de5ddc0eb46ffea0b1ce86c",
+                "summary": "Get all applications (Admin only)",
+                "description": "Retrieve paginated list of all job applications",
+                "operationId": "895749895f8d7900e2b7a93830d1f67f",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "List of jobs",
+                        "description": "Paginated applications list",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "properties": {
-                                            "id": {
-                                                "type": "integer"
-                                            },
-                                            "title": {
-                                                "type": "string"
-                                            },
-                                            "company": {
-                                                "type": "string"
-                                            },
-                                            "location": {
-                                                "type": "string"
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "job_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "cv": {
+                                                        "type": "string",
+                                                        "example": "cvs/document.pdf"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "Pending"
+                                                    },
+                                                    "user": {
+                                                        "properties": {
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "John Doe"
+                                                            },
+                                                            "email": {
+                                                                "type": "string",
+                                                                "example": "john@example.com"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "job": {
+                                                        "properties": {
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "Software Engineer"
+                                                            },
+                                                            "company": {
+                                                                "type": "string",
+                                                                "example": "Tech Corp"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
                                             }
                                         },
-                                        "type": "object"
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 50
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - Admin only"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jobs/{id}/apply": {
+            "post": {
+                "tags": [
+                    "Applications"
+                ],
+                "summary": "Apply for a job",
+                "description": "Submit job application with CV upload",
+                "operationId": "e96804e85fcd63351097a684e1968321",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Job ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "cv"
+                                ],
+                                "properties": {
+                                    "cv": {
+                                        "description": "CV file (PDF, max 2MB)",
+                                        "type": "string",
+                                        "format": "binary"
                                     }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Application submitted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Application submitted"
+                                        },
+                                        "application": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "job_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "cv": {
+                                                    "type": "string",
+                                                    "example": "cvs/document.pdf"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "Pending"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/applications/{id}/status": {
+            "put": {
+                "tags": [
+                    "Applications (Admin)"
+                ],
+                "summary": "Update application status (Admin only)",
+                "description": "Accept or reject job application",
+                "operationId": "4bf1254b3c299a98746cad98c4abe333",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Application ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Accepted",
+                                            "Rejected"
+                                        ],
+                                        "example": "Accepted"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Status updated"
+                                        },
+                                        "application": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "Accepted"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - Admin only"
+                    },
+                    "404": {
+                        "description": "Application not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register a new user",
+                "description": "Create a new user account (default role: user)",
+                "operationId": "8e4e3cb7b46126f4696379d3c7eeb4ad",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "enum": [
+                                            "user",
+                                            "admin"
+                                        ],
+                                        "example": "user"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Registered"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "user"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "User login",
+                "description": "Authenticate user and return API token",
+                "operationId": "222b2625838e3c57e017987f73598fda",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login success"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abcdef123456..."
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "user"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "User logout",
+                "description": "Revoke current access token",
+                "operationId": "ad65cbbd4e9f201619eae184a5961a98",
+                "responses": {
+                    "200": {
+                        "description": "Logged out successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -48,12 +519,452 @@
                     }
                 ]
             }
+        },
+        "/api/public/jobs": {
+            "get": {
+                "tags": [
+                    "Jobs (Public)"
+                ],
+                "summary": "Get all job listings (Public)",
+                "description": "Retrieve paginated job listings with optional search and filters",
+                "operationId": "37b7b1eb7cc2d4f3c2f62c47c1f6473e",
+                "parameters": [
+                    {
+                        "name": "keyword",
+                        "in": "query",
+                        "description": "Search keyword (searches in title, company, location)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "developer"
+                        }
+                    },
+                    {
+                        "name": "company",
+                        "in": "query",
+                        "description": "Filter by company name",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Google"
+                        }
+                    },
+                    {
+                        "name": "location",
+                        "in": "query",
+                        "description": "Filter by location",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Jakarta"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of jobs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Software Engineer"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "We are looking for...\\"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "example": "Jakarta"
+                                                    },
+                                                    "company": {
+                                                        "type": "string",
+                                                        "example": "Tech Corp"
+                                                    },
+                                                    "salary": {
+                                                        "type": "integer",
+                                                        "example": 10000000
+                                                    },
+                                                    "logo": {
+                                                        "type": "string",
+                                                        "example": "logos/company.jpg"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "example": "2025-11-25T10:00:00.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 50
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 10
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/jobs/{id}": {
+            "get": {
+                "tags": [
+                    "Jobs (Public)"
+                ],
+                "summary": "Get job details",
+                "description": "Retrieve single job details by ID",
+                "operationId": "4905cb878352b0fc116252c79e1d98ce",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Job ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Job details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Software Engineer"
+                                        },
+                                        "description": {
+                                            "type": "string",
+                                            "example": "Job description..."
+                                        },
+                                        "location": {
+                                            "type": "string",
+                                            "example": "Jakarta"
+                                        },
+                                        "company": {
+                                            "type": "string",
+                                            "example": "Tech Corp"
+                                        },
+                                        "salary": {
+                                            "type": "integer",
+                                            "example": 10000000
+                                        },
+                                        "logo": {
+                                            "type": "string",
+                                            "example": "logos/company.jpg"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Job not found"
+                    }
+                }
+            }
+        },
+        "/api/jobs": {
+            "post": {
+                "tags": [
+                    "Jobs (Admin)"
+                ],
+                "summary": "Create new job (Admin only)",
+                "description": "Create a new job vacancy",
+                "operationId": "46db842b9a0994748f28e0cc492a5b45",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "description",
+                                    "location",
+                                    "company"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Software Engineer"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "We are looking for..."
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "Jakarta"
+                                    },
+                                    "company": {
+                                        "type": "string",
+                                        "example": "Tech Corp"
+                                    },
+                                    "salary": {
+                                        "type": "integer",
+                                        "example": 10000000
+                                    },
+                                    "logo": {
+                                        "type": "string",
+                                        "example": "logos/logo.jpg"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Job created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Created"
+                                        },
+                                        "job": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - Admin only"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jobs/{id}": {
+            "put": {
+                "tags": [
+                    "Jobs (Admin)"
+                ],
+                "summary": "Update job (Admin only)",
+                "description": "Update existing job details",
+                "operationId": "09003eadd3b848807fdd9deb993a68ee",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Job ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Senior Software Engineer"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated description"
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "Bandung"
+                                    },
+                                    "company": {
+                                        "type": "string",
+                                        "example": "Tech Corp"
+                                    },
+                                    "salary": {
+                                        "type": "integer",
+                                        "example": 15000000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Job updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Updated"
+                                        },
+                                        "job": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - Admin only"
+                    },
+                    "404": {
+                        "description": "Job not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Jobs (Admin)"
+                ],
+                "summary": "Delete job (Admin only)",
+                "description": "Delete a job vacancy",
+                "operationId": "10aafac8e299b54e3bdd7bf7d651b26b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Job ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Job deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - Admin only"
+                    },
+                    "404": {
+                        "description": "Job not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Enter your Bearer token in the format: Bearer {token}",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
         }
     },
     "tags": [
         {
-            "name": "Jobs",
-            "description": "Jobs"
+            "name": "Applications (Admin)",
+            "description": "Applications (Admin)"
+        },
+        {
+            "name": "Applications",
+            "description": "Applications"
+        },
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        },
+        {
+            "name": "Jobs (Public)",
+            "description": "Jobs (Public)"
+        },
+        {
+            "name": "Jobs (Admin)",
+            "description": "Jobs (Admin)"
         }
     ]
 }

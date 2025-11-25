@@ -46,13 +46,13 @@ class JobApiController extends Controller
 	 *     @OA\Parameter(
 	 *         name="per_page",
 	 *         in="query",
-	 *         description=\"Items per page\",
+	 *         description="Items per page",
 	 *         required=false,
 	 *         @OA\Schema(type="integer", example=10)
 	 *     ),
 	 *     @OA\Response(
 	 *         response=200,
-	 *         description=\"Paginated list of jobs\",
+	 *         description="Paginated list of jobs",
 	 *         @OA\JsonContent(
 	 *             @OA\Property(property="current_page", type="integer", example=1),
 	 *             @OA\Property(property="data", type="array",
