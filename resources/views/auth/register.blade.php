@@ -6,11 +6,8 @@
 <div class="register-container">
   <div class="register-wrapper">
     <div class="register-header">
-      <h2>Create your account</h2>
-      <p>
-        Or
-        <a href="/login">sign in to your account</a>
-      </p>
+      <h2>Create Account</h2>
+      <p>Already have an account? <a href="/login">Sign in</a></p>
     </div>
 
     <form class="register-form" method="POST" action="/register">
@@ -18,164 +15,239 @@
       <div class="form-group">
         <div class="input-group">
           <label for="name">Full Name</label>
-          <input id="name" name="name" type="text" autocomplete="name" required placeholder="Full Name">
+          <input id="name" name="name" type="text" autocomplete="name" required placeholder="Enter your full name">
         </div>
+        
         <div class="input-group">
-          <label for="email">Email address</label>
-          <input id="email" name="email" type="email" autocomplete="email" required placeholder="Email address">
+          <label for="email">Email Address</label>
+          <input id="email" name="email" type="email" autocomplete="email" required placeholder="Enter your email">
         </div>
+        
         <div class="input-group">
           <label for="password">Password</label>
-          <input id="password" name="password" type="password" autocomplete="new-password" required placeholder="Password">
+          <input id="password" name="password" type="password" autocomplete="new-password" required placeholder="Create a password">
         </div>
+        
         <div class="input-group">
           <label for="password_confirmation">Confirm Password</label>
-          <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required placeholder="Confirm Password">
+          <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required placeholder="Confirm your password">
         </div>
+        
         <div class="role-group">
-          <span>Select Role</span>
+          <label class="role-label">Account Type</label>
           <div class="role-options">
-            <label><input type="radio" name="role" value="user" checked> User</label>
-            <label><input type="radio" name="role" value="admin"> Admin</label>
+            <label class="role-option">
+              <input type="radio" name="role" value="user" checked>
+              <span class="role-text">User</span>
+            </label>
+            <label class="role-option">
+              <input type="radio" name="role" value="admin">
+              <span class="role-text">Admin</span>
+            </label>
           </div>
         </div>
       </div>
-      <div>
-        <button type="submit" class="btn-submit">Create Account</button>
-      </div>
+      
+      <button type="submit" class="btn-submit">Create Account</button>
     </form>
   </div>
 </div>
 
 <style>
 .register-container {
-  min-height: 60vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f9fafb;
-  padding: 3rem 1rem;
+  background: #ffffff;
+  padding: 48px 24px;
 }
 
 .register-wrapper {
-  max-width: 28rem;
+  max-width: 440px;
   width: 100%;
-  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
+/* Header */
 .register-header {
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
   text-align: center;
 }
 
 .register-header h2 {
-  margin-top: 1.5rem;
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-  font-weight: 800;
+  font-size: 24px;
+  font-weight: 600;
   color: #111827;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
 }
 
 .register-header p {
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 14px;
   color: #6b7280;
+  margin: 0;
 }
 
 .register-header a {
-  font-weight: 500;
-  color: #4f46e5;
+  color: #111827;
   text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px solid #111827;
+  transition: all 0.2s ease;
 }
 
+.register-header a:hover {
+  color: #000000;
+  border-bottom-color: #000000;
+}
+
+/* Form */
 .register-form {
-  margin-top: 2rem;
+  margin-top: 24px;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 24px;
 }
 
 .input-group {
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .input-group label {
-  display: block;
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 500;
-  color: #374151;
-  margin-bottom: 0.5rem;
+  color: #111827;
+  margin-bottom: 8px;
 }
 
 .input-group input {
-  display: block;
   width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  background-color: #ffffff;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
   color: #111827;
-  font-size: 0.875rem;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  font-size: 14px;
   outline: none;
+  transition: all 0.2s ease;
+}
+
+.input-group input::placeholder {
+  color: #9ca3af;
 }
 
 .input-group input:focus {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+  border-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
+/* Role Selection */
 .role-group {
-  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
-.role-group span {
-  display: block;
-  font-size: 0.875rem;
+.role-label {
+  font-size: 14px;
   font-weight: 500;
-  color: #374151;
-  margin-bottom: 0.5rem;
+  color: #111827;
+  margin-bottom: 12px;
 }
 
 .role-options {
   display: flex;
-  gap: 1rem;
-  align-items: center;
+  gap: 12px;
 }
 
-.role-options label {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.875rem;
-  color: #374151;
-}
-
-.role-options input[type="radio"] {
-  accent-color: #4f46e5;
-}
-
-.btn-submit {
+.role-option {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border: 1px solid transparent;
-  border-radius: 0.375rem;
-  background-color: #4f46e5;
-  color: #ffffff;
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-decoration: none;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
   cursor: pointer;
-  outline: none;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+}
+
+.role-option:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+.role-option input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #000000;
+}
+
+.role-option input[type="radio"]:checked + .role-text {
+  font-weight: 600;
+}
+
+.role-option:has(input[type="radio"]:checked) {
+  border-color: #000000;
+  background: #f9fafb;
+}
+
+.role-text {
+  font-size: 14px;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+/* Submit Button */
+.btn-submit {
+  width: 100%;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #000000;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
 }
 
 .btn-submit:hover {
-  background-color: #4338ca;
+  background: #1f2937;
+  transform: translateY(-1px);
+}
+
+.btn-submit:active {
+  transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .register-wrapper {
+    padding: 32px 24px;
+  }
+  
+  .register-header h2 {
+    font-size: 22px;
+  }
+  
+  .role-options {
+    flex-direction: column;
+  }
 }
 </style>
 @endsection

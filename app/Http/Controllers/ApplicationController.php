@@ -47,8 +47,12 @@ class ApplicationController extends Controller
                 'cv' => 'required|mimes:pdf|max:2048',
             ]);
 
-            $cvPath = $request->file('cv')->store('cvs', 'public');
 
+            $cvPath = null;
+            if ($request->hasFile('logo')) {
+            $cvPath = $request->file('cv')->store('cvs', 'public');
+            }
+            
             $job = Job::findOrFail($jobId);
             $application = Application::create([
                 'user_id' => Auth::id(),

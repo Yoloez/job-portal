@@ -9,11 +9,11 @@
 
 </head>
 <body>
+    <div style="flex:1; height:100dvh;">
     @include('components.header')
     @yield('content')
-    <div style="flex:1">
         
-    </div>
     @include('components.footer')
+</div>
 </body>
 </html>
